@@ -8,7 +8,7 @@ import openstack.ceilometer.compute.virt.local.inspector as local_inspector
 
 class SLInstanceInspector(local_inspector.LocalInstanceInspector):
 
-    def SLInstanceInspector(self):
+    def __init__(self):
         super(SLInstanceInspector, self).__init__()
         self.client = SoftLayer.Client(
             username=os.getenv('SL_USERNAME', None),
