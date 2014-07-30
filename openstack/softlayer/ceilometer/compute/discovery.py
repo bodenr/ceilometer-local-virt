@@ -9,7 +9,16 @@ from ceilometer.openstack.common import log
 from novaclient.v1_1 import client as nova_client
 from oslo.config import cfg
 
+
 LOG = log.getLogger(__name__)
+
+nova_opts = [
+    cfg.BoolOpt('nova_http_log_debug',
+                default=False,
+                help='Allow novaclient\'s debug log output.'),
+]
+cfg.CONF.register_opts(nova_opts)
+cfg.CONF.import_group('service_credentials', 'ceilometer.service')
 
 
 def client():
