@@ -25,7 +25,8 @@ setup(
         'ceilometer',
         'psutil',
         'netifaces',
-        'stevedore' 
+        'stevedore',
+        'six'
     ],
     setup_requires=[],
     entry_points={
@@ -33,7 +34,10 @@ setup(
             'local = openstack.ceilometer.compute.virt.local.inspector:LocalInspector'
         ],
         'ceilometer.compute.virt.instance.inspector': [
-            'softlayer = openstack.softlayer.ceilometer.inspector:SLInstanceInspector'
+            'softlayer = openstack.softlayer.ceilometer.compute.discovery:SLInstanceInspector'
+        ],
+        'ceilometer.discover': [
+            'local_instances = openstack.softlayer.ceilometer.compute.discovery:InstanceDiscovery'
         ]
     }
 )

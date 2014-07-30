@@ -2,3 +2,4 @@ psutil>=2.1.1
 netifaces>=0.10.4
 ceilometer>=2014.2
 stevedore>=0.14
+six>=1.7.0

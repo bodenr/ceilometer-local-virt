@@ -1,5 +1,6 @@
 import abc
 import psutil
+import six
 
 import netifaces as netif
 
@@ -19,6 +20,7 @@ CONF = cfg.CONF
 CONF.register_opts(OPTS)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class LocalInstanceInspector(object):
 
     @abc.abstractmethod
