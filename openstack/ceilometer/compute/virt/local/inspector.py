@@ -5,6 +5,7 @@ import six
 import netifaces as netif
 
 from ceilometer.compute.virt import inspector as virt_inspector
+from ceilometer.openstack.common import log
 from ceilometer.openstack.common import units
 from oslo.config import cfg
 from stevedore import driver
@@ -18,6 +19,7 @@ OPTS = [
 
 CONF = cfg.CONF
 CONF.register_opts(OPTS)
+LOG = log.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -38,6 +40,8 @@ class LocalInspector(virt_inspector.Inspector):
 
     def __init__(self):
         super(LocalInspector, self).__init__()
+        LOG.info("Loading instance inspector driver for: %s" %
+                 (CONF.local_instance_type))
         self.inst_inspector = driver.DriverManager(
             namespace=LocalInspector.NAMESPACE,
             name=CONF.local_instance_type,
