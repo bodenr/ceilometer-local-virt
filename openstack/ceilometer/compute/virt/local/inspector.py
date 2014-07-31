@@ -12,9 +12,17 @@ from stevedore import driver
 
 OPTS = [
     cfg.StrOpt('local_instance_type',
-               default='softlayer',
+               default='conf',
                help='Local instance inspector to use for inspecting '
                'the hypervisor layer.'),
+    cfg.StrOpt('local_instance_name',
+               default=None,
+               help='Local instance name for use with ceilometer '
+               'local conf inspector.'),
+    cfg.StrOpt('local_instance_uuid',
+               default=None,
+               help='Local instance UUID for use with ceilometer '
+               'local conf inspector.')
 ]
 
 CONF = cfg.CONF
@@ -32,6 +40,18 @@ class LocalInstanceInspector(object):
     @abc.abstractmethod
     def instance_uuid(self):
         pass
+
+
+class ConfInstanceInspector(LocalInstanceInspector):
+
+    def __init__(self):
+        super(ConfInstanceInspector, self).__init__()
+
+    def instance_name(self):
+        return CONF.local_instance_name
+
+    def instance_uuid(self):
+        return CONF.local_instance_uuid
 
 
 class LocalInspector(virt_inspector.Inspector):

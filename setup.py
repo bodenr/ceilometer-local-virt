@@ -34,7 +34,8 @@ setup(
             'local = openstack.ceilometer.compute.virt.local.inspector:LocalInspector'
         ],
         'ceilometer.compute.virt.instance.inspector': [
-            'softlayer = openstack.softlayer.ceilometer.compute.discovery:SLInstanceInspector'
+            'softlayer = openstack.softlayer.ceilometer.compute.discovery:SLInstanceInspector',
+            'conf = openstack.ceilometer.compute.virt.local.inspector:ConfInstanceInspector'
         ],
         'ceilometer.discover': [
             'local_instances = openstack.softlayer.ceilometer.compute.discovery:InstanceDiscovery'
