@@ -1,14 +1,13 @@
 import novaclient
 
-import openstack.ceilometer.compute.virt.local.inspector as local_inspector
 import openstack.softlayer.utils as sl_utils
+import openstack.ceilometer.compute.virt.local.inspector as inspector
 
 from ceilometer import plugin
 from ceilometer import nova_client
 from ceilometer.openstack.common import log
 from novaclient.v1_1 import client as nova_client
 from oslo.config import cfg
-
 
 LOG = log.getLogger(__name__)
 
@@ -37,20 +36,6 @@ def client():
         no_cache=True)
 
 
-class SLInstanceInspector(local_inspector.LocalInstanceInspector):
-
-    def __init__(self):
-        super(SLInstanceInspector, self).__init__()
-        self.server = InstanceDiscovery().server()
-        LOG.debug("SoftLayer instance inspector found: %s" % (self.server))
-
-    def instance_name(self):
-        return self.server.get('hostname')
-
-    def instance_uuid(self):
-        return self.server.get('id')
-
-
 class InstanceDiscovery(plugin.DiscoveryBase):
 
     _client = None
@@ -61,15 +46,37 @@ class InstanceDiscovery(plugin.DiscoveryBase):
             InstanceDiscovery._client = client()
 
     def server(self):
-        search_ops = {'private_ip': str(sl_utils.private_ip()),
-                      'hostname': sl_utils.hostname()}
+        search_ops = {'ip': str(sl_utils.public_ip()),
+                      'name': sl_utils.hostname()}
         LOG.debug("Query SoftLayer VMs with params: %s" % (search_ops))
         server = InstanceDiscovery._client.servers.list(detailed=True,
-                                                        search_ops=search_ops)
-        assert type(server) != list and len(server) != 1, ("Unable to find "
+                                                        search_opts=search_ops)
+        assert type(server) == list and len(server) == 1, ("Unable to find "
             "local instance: %s" % sl_utils.hostname())
-        LOG.debug("SoftLayer instance discovery found: %s" % (server[0]))
-        return server[0]
+        server = server[0]
+        server.flavor = InstanceDiscovery._client.flavors.get(
+            server.flavor.get('id')).__dict__
+        del server.flavor['manager']
+        server.flavor['ephemeral'] = server.flavor['OS-FLV-EXT-DATA:ephemeral']
+        server.image = InstanceDiscovery._client.images.get(
+            server.image.get('id')).__dict__
+        del server.image['manager']
+        LOG.debug("SoftLayer instance discovery found: %s" % server)
+        return server
 
     def discover(self, param=None):
         return [self.server()]
+
+
+class SLInstanceInspector(inspector.LocalInstanceInspector):
+
+    def __init__(self):
+        super(SLInstanceInspector, self).__init__()
+        self.server = InstanceDiscovery().server()
+        LOG.debug("SoftLayer instance inspector found: %s" % (self.server))
+
+    def instance_name(self):
+        return self.server.hostname
+
+    def instance_uuid(self):
+        return self.server.id

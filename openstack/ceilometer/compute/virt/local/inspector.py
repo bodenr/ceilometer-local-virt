@@ -42,19 +42,17 @@ class LocalInspector(virt_inspector.Inspector):
         super(LocalInspector, self).__init__()
         LOG.info("Loading instance inspector driver for: %s" %
                  (CONF.local_instance_type))
-        self.inst_inspector = driver.DriverManager(
-            namespace=LocalInspector.NAMESPACE,
-            name=CONF.local_instance_type,
-            invoke_on_load=True,
-            invoke_args=None)
-        assert isinstance(self.inst_inspector,
-                          LocalInstanceInspector), ('Invalid instance '
-                          'inspector type superclass')
+        mgr = driver.DriverManager(namespace=LocalInspector.NAMESPACE,
+                                   name=CONF.local_instance_type)
+        self._inst_inspector = mgr.driver()
+        assert isinstance(self._inst_inspector,
+                          LocalInstanceInspector), ('Invalid '
+                          'instance inspector type superclass')
 
     def inspect_instances(self):
         return virt_inspector.Instance(
-            name=self.inst_inspector.instance_name(),
-            UUID=self.inst_inspector.instance_uuid())
+            name=self._inst_inspector.instance_name(),
+            UUID=self._inst_inspector.instance_uuid())
 
     def inspect_cpus(self, instance_name):
         cpu_count = psutil.cpu_count()
@@ -73,7 +71,7 @@ class LocalInspector(virt_inspector.Inspector):
             interface = virt_inspector.Interface(
                 name=iface,
                 mac=link[0].get('addr'),
-                fref=None,
+                fref=self._inst_inspector.instance_uuid(),
                 parameters=None)
 
             stat = virt_inspector.InterfaceStats(
