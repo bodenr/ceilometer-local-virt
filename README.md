@@ -41,6 +41,7 @@ the local VM or bare metal host.
 * Install the project: ```cd ceilometer-local-virt && python setup.py install```
 
 * Edit the ```ceilometer.conf``` to specify the local inspector.
+
 ```ini
 [DEFAULT]
 hypervisor_inspector = local
@@ -48,12 +49,14 @@ hypervisor_inspector = local
 
 * If you've implemented your own ```LocalInstanceInspector``` then specify it in the 
 ```ceilometer.conf```:
+
 ```ini
 local_instance_type = your_inspector_id
 ```
 
 * If you're using the default ```conf``` instance inspector, define your
 instance UUID and name in the ```ceilometer.conf```:
+
 ```ini
 local_instance_name = The instance name
 local_instance_uuid = THE_INSTANCE_UUID
