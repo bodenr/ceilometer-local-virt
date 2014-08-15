@@ -48,14 +48,14 @@ hypervisor_inspector = local
 ```
 
 * If you've implemented your own ```LocalInstanceInspector``` then specify it in the 
-```ceilometer.conf```:
+```ceilometer.conf``` as follows:
 
 ```ini
 local_instance_type = your_inspector_id
 ```
 
 * If you're using the default ```conf``` instance inspector, define your
-instance UUID and name in the ```ceilometer.conf```:
+instance UUID and name in the ```ceilometer.conf``` as follows:
 
 ```ini
 local_instance_name = The instance name
